@@ -1,4 +1,6 @@
 <%- | String $interval,
+      String $calendar,
+      String $scheduling_method,
 | -%>
 # THIS FILE IS MANAGED BY PUPPET
 [Unit]
@@ -7,8 +9,13 @@ Description=Runs database dumps every <%= $interval %>
 [Timer]
 # Time to wait after booting before we run first time
 OnBootSec=10min
+<% if $scheduling_method == 'interval' { -%>
 # Time between running each consecutive time
 OnUnitActiveSec=<%= $interval %>
+<% } else { -%>
+# Work on predefined dates or recurring schedules
+OnCalendar=<%= $calendar %>
+<% } -%>
 
 [Install]
 WantedBy=multi-user.target

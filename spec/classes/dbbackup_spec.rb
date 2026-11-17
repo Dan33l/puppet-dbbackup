@@ -17,9 +17,19 @@ describe 'dbbackup' do
         it { is_expected.to compile.with_all_deps }
         it { is_expected.to contain_file('/usr/local/bin/dump_databases') }
         it { is_expected.to contain_systemd__unit_file('dump_databases.service') }
-        it { is_expected.to contain_systemd__unit_file('dump_databases.timer') }
+        it { is_expected.to contain_systemd__unit_file('dump_databases.timer').with(content: %r{OnUnitActiveSec=1h}) }
         it { is_expected.to contain_service('dump_databases.timer') }
         it { is_expected.not_to contain_package('pigz') }
+      end
+
+      context 'with scheduling_method on calendar' do
+        let :params do
+          {
+            scheduling_method: 'calendar',
+          }
+        end
+
+        it { is_expected.to contain_systemd__unit_file('dump_databases.timer').with(content: %r{OnCalendar=\*-\*-\* 0-23/1:00:00}) }
       end
 
       context 'with managed deps' do

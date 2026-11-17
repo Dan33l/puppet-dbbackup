@@ -21,6 +21,8 @@ The following parameters are available in the `dbbackup` class:
 * [`pigz_cpu_cores`](#-dbbackup--pigz_cpu_cores)
 * [`destination`](#-dbbackup--destination)
 * [`interval`](#-dbbackup--interval)
+* [`calendar`](#-dbbackup--calendar)
+* [`scheduling_method`](#-dbbackup--scheduling_method)
 * [`backuphistory`](#-dbbackup--backuphistory)
 * [`cleanup_empty_backup_dirs`](#-dbbackup--cleanup_empty_backup_dirs)
 * [`dependencies`](#-dbbackup--dependencies)
@@ -49,6 +51,22 @@ Data type: `String[2]`
 how often the systemd timer will trigger the dump script. This will be used for the OnUnitInactiveSec option in the timer
 
 Default value: `'1h'`
+
+##### <a name="-dbbackup--calendar"></a>`calendar`
+
+Data type: `String[1]`
+
+when the systemd timer will trigger the dump script.
+
+Default value: `'*-*-* 0-23/1:00:00'`
+
+##### <a name="-dbbackup--scheduling_method"></a>`scheduling_method`
+
+Data type: `Enum['interval','calendar']`
+
+define the scheduling method used to trigger the service unit.
+
+Default value: `'interval'`
 
 ##### <a name="-dbbackup--backuphistory"></a>`backuphistory`
 
