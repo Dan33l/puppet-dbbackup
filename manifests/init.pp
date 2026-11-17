@@ -6,6 +6,10 @@
 #   directory where backups will be stored (with one subdirectory per backup day)
 # @param interval
 #   how often the systemd timer will trigger the dump script. This will be used for the OnUnitInactiveSec option in the timer
+# @param calendar
+#   when the systemd timer will trigger the dump script.
+# @param scheduling_method
+#   define the scheduling method used to trigger the service unit.
 # @param backuphistory
 #   number of days to keep the backup history
 # @param cleanup_empty_backup_dirs
@@ -17,13 +21,15 @@
 #
 # @author Tim Meusel <tim@bastelfreak.de>
 class dbbackup (
-  Optional[Integer[1]] $pigz_cpu_cores = undef,
-  Stdlib::Absolutepath $destination    = '/mnt/dumps',
-  String[2] $interval                  = '1h',
-  Optional[Integer[1]] $backuphistory  = undef,
-  Boolean $cleanup_empty_backup_dirs   = true,
-  Array[String[1]] $dependencies       = ['pigz'],
-  Boolean $manage_dependencies         = false,
+  Optional[Integer[1]] $pigz_cpu_cores           = undef,
+  Stdlib::Absolutepath $destination              = '/mnt/dumps',
+  String[2] $interval                            = '1h',
+  String[1] $calendar                            = '*-*-* 0-23/1:00:00',
+  Enum['interval','calendar'] $scheduling_method = 'interval',
+  Optional[Integer[1]] $backuphistory            = undef,
+  Boolean $cleanup_empty_backup_dirs             = true,
+  Array[String[1]] $dependencies                 = ['pigz'],
+  Boolean $manage_dependencies                   = false,
 ) {
   file { '/usr/local/bin/dump_databases':
     content => epp("${module_name}/dump_databases.epp", {
@@ -38,7 +44,9 @@ class dbbackup (
     enable          => true,
     active          => true,
     timer_content   => epp("${module_name}/dump_databases.timer.epp", {
-      'interval' => $interval,
+      'interval'          => $interval,
+      'calendar'          => $calendar,
+      'scheduling_method' => $scheduling_method,
     }),
     service_content => epp("${module_name}/dump_databases.service.epp", {
       'backuphistory'             => $backuphistory,
