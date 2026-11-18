@@ -4,9 +4,8 @@
 # https://voxpupuli.org/docs/updating-files-managed-with-modulesync/
 
 require 'voxpupuli/acceptance/spec_helper_acceptance'
-require 'beaker-puppet'
 
-configure_beaker(modules: :fixtures)
+configure_beaker(modules: :metadata)
 
 Dir['./spec/support/acceptance/**/*.rb'].sort.each { |f| require f }
 
@@ -22,10 +21,10 @@ hosts.each do |host|
   scp_to(host, hieradata, '/etc/puppetlabs/puppet/hieradata/common.yaml')
 
   # install mysql and postgresql modules
-  on host, puppet('module install puppetlabs-mysql')
-  on host, puppet('module install puppetlabs-postgresql')
+  on host, 'puppet module install puppetlabs-mysql'
+  on host, 'puppet module install puppetlabs-postgresql'
 
-  on(host, 'mkdir -p /var/test')
+  on host, 'mkdir -p /var/test'
 
   # create mysqlDB and psqlDB on node
   pp = %(

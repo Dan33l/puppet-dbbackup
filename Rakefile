@@ -12,7 +12,6 @@ begin
 rescue LoadError
   # only available if gem group acceptance is installed
 end
-task :beaker => "fixtures:prep"
 
 begin
   require 'voxpupuli/release/rake_tasks'
